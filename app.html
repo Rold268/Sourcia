@@ -93,6 +93,7 @@ body::before {
     radial-gradient(ellipse 60% 50% at 15% 55%, rgba(99,102,241,.14) 0%, transparent 65%),
     radial-gradient(ellipse 50% 45% at 85% 45%, rgba(34,211,238,.09) 0%, transparent 65%),
     radial-gradient(ellipse 30% 60% at 50% 95%, rgba(99,102,241,.07) 0%, transparent 60%);
+  pointer-events: none;
 }
 .login-grid {
   display: grid;
@@ -1858,6 +1859,60 @@ input.inp::placeholder, textarea.inp::placeholder { color: var(--text3); }
   .user-logout { display: none; }
 }
 </style>
+<script>
+// Fonctions critiques chargées en priorité
+var selectedRole = null;
+
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('active'); });
+  var card = document.getElementById('rc-' + role);
+  if (card) card.classList.add('active');
+  var btn = document.getElementById('btn-continuer');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+}
+
+function goToLogin() {
+  if (!selectedRole) return;
+  var destinations = { acheteur:'dashboard', prestataire:'dashboard-prest', independant:'marketplace-missions', pme:'sourcing-ia' };
+  var loginScreen = document.getElementById('loginScreen');
+  var sidebar = document.querySelector('.sidebar');
+  var main = document.querySelector('.main');
+  if (loginScreen) loginScreen.style.display = 'none';
+  if (sidebar) sidebar.style.display = 'flex';
+  if (main) main.style.display = 'flex';
+  if (typeof showPage === 'function') showPage(destinations[selectedRole] || 'dashboard');
+}
+
+function backToRoles() {
+  var s1 = document.getElementById('ls-step1');
+  var s2 = document.getElementById('ls-step2');
+  if (s1) s1.style.display = '';
+  if (s2) s2.style.display = 'none';
+}
+
+function enterApp() {
+  var loginScreen = document.getElementById('loginScreen');
+  var sidebar = document.querySelector('.sidebar');
+  var main = document.querySelector('.main');
+  if (loginScreen) loginScreen.style.display = 'none';
+  if (sidebar) sidebar.style.display = 'flex';
+  if (main) main.style.display = 'flex';
+}
+
+function doLogout() {
+  var loginScreen = document.getElementById('loginScreen');
+  var sidebar = document.querySelector('.sidebar');
+  var main = document.querySelector('.main');
+  if (loginScreen) loginScreen.style.display = 'flex';
+  if (sidebar) sidebar.style.display = 'none';
+  if (main) main.style.display = 'none';
+  selectedRole = null;
+  document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('active'); });
+  var btn = document.getElementById('btn-continuer');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.35'; btn.style.cursor = 'not-allowed'; }
+}
+</script>
 </head>
 <body>
 
@@ -8917,47 +8972,7 @@ Disponible dans vos Documents.')">⚡ Générer le CDC →</button>
 </div>
 
 <!-- ═══ SCRIPT ═══ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-var selectedRole = null;
-
-function selectRole(role) {
-  selectedRole = role;
-  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
-  document.getElementById('rc-' + role)?.classList.add('active');
-  var btn = document.getElementById('btn-continuer');
-  btn.disabled = false;
-  btn.style.opacity = '1';
-  btn.style.cursor = 'pointer';
-}
-
-function goToLogin() {
-  if (!selectedRole) return;
-  var icons = { acheteur:'🛒', prestataire:'🏢', independant:'🎯', pme:'🏪' };
-  var titles = { acheteur:'Espace Acheteur', prestataire:'Espace Prestataire', independant:'Espace Indépendant', pme:'Espace PME' };
-  document.getElementById('ls2-icon').textContent = icons[selectedRole];
-  document.getElementById('ls2-title').textContent = titles[selectedRole];
-  document.getElementById('ls-step1').style.display = 'none';
-  document.getElementById('ls-step2').style.display = 'block';
-}
-
-function backToRoles() {
-  document.getElementById('ls-step1').style.display = '';
-  document.getElementById('ls-step2').style.display = 'none';
-}
-
-function enterApp() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.querySelector('.sidebar').style.display = 'flex';
-  document.querySelector('.main').style.display = 'flex';
-}
-
-function doLogout() {
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.querySelector('.sidebar').style.display = 'none';
-  document.querySelector('.main').style.display = 'none';
-  backToRoles();
-}
-
+<script>
 var pageTitles = {
   dashboard:'Tableau de bord', vendors:'Prestataires', recherche:'Recherche avancée',
   contracts:'Contrats', savings:'Économies Achats', scoring:'Scoring prestataires',
